@@ -6,7 +6,7 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import utils.PropertiesReaderReader;
+import utils.PropertiesReader;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.lessThanOrEqualTo;
 
 public class BaseTest {
 
-    public static String STACKOVERFLOW_ANSWERS_URL = buildURL(PropertyReader.getBaseURL(), PropertyReader.getEndPoint(), PropertyReader.getParameters());
+    public static String STACKOVERFLOW_ANSWERS_URL = buildURL(PropertiesReader.getBaseURL(), PropertiesReader.getEndPoint(), PropertiesReader.getParameters());
     private static RequestSpecification requestSpecification;
 
     public BaseTest() {
