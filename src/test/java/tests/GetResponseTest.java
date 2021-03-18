@@ -1,27 +1,32 @@
 package tests;
 
+import jsonobjects.Item;
+import jsonobjects.Owner;
+import jsonobjects.Root;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
+
+import static tests.UrlConstants.STACKOVERFLOW_PARAMETERS_URL;
 
 public class GetResponseTest extends BaseTest {
 
-    @Test(priority = 1)
-    public static void assertStatusCode() {
-        verifyStatusCode(200);
-    }
+    @Test()
+    public void getResponseHasCorrectAttributes() {
 
-    @Test(priority = 2)
-    public static void assertArraySize() {
-        verifyResponseArraySize("items.owner", 10);
-    }
+        SoftAssert softAssert = new SoftAssert();
+        Root newRoot = deserializeRootResponse(STACKOVERFLOW_PARAMETERS_URL);
 
-    @Test(priority = 3)
-    public static void assertThatEachItemHasOwner() {
-        verifyParentElementContainsChildElement("items", "owner");
-    }
+        softAssert.assertTrue(newRoot.backoff <= 10, "Item array size is incorrect: " + newRoot.backoff);
 
-    @Test(priority = 4)
-    public static void isObjectLinkCorrect() {
-        verifyUserLinkIsCorrect("items.owner", "link", "display_name", "user_id");
+        for (Item item : newRoot.items) {
+            Owner owner = item.owner;
+            softAssert.assertNotNull(owner, "Item doesn't contain owner");
+            if (owner == null) {
+                continue;
+            }
+            softAssert.assertTrue(owner.link.contains("/" + owner.user_id + "/"), owner.link + " vs. " + owner.user_id);
+            softAssert.assertTrue(owner.link.endsWith("/" + owner.display_name.replace(" ", "-").toLowerCase()), owner.link + " vs. " + owner.display_name);
+        }
+        softAssert.assertAll();
     }
-
 }
