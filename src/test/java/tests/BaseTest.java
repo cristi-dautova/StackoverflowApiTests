@@ -6,19 +6,29 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jsonobjects.Root;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.asserts.SoftAssert;
 
 import static io.restassured.RestAssured.given;
-import static tests.UrlConstants.STACKOVERFLOW_PARAMETERS_URL;
+import static utils.UrlConstants.*;
 
 public class BaseTest {
 
-    private static RequestSpecification requestSpecification;
+    public static RequestSpecification requestSpecification;
+    protected SoftAssert softAssert;
 
     public BaseTest() {
+    }
+
+    @BeforeClass
+    public void setUp() {
         RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder();
-        requestSpecBuilder.setBaseUri(STACKOVERFLOW_PARAMETERS_URL);
+        requestSpecBuilder.setBaseUri(BASE_URL);
         requestSpecBuilder.setContentType(ContentType.JSON);
-        requestSpecBuilder.log(LogDetail.ALL);
+        requestSpecBuilder.log(LogDetail.METHOD);
+        requestSpecBuilder.log(LogDetail.URI);
         requestSpecification = requestSpecBuilder.build();
     }
 
@@ -26,10 +36,20 @@ public class BaseTest {
         return given(requestSpecification).when().get(url);
     }
 
-    public Root deserializeRootResponse(String url) {
-        return getResponse(url)
-                .then()
+    public Root deserializeResponse(Response response) {
+        return response
+                .then().log().body()
                 .extract()
                 .as(Root.class);
+    }
+
+    @DataProvider(name = "parameters for answersEndPointTest")
+    public Object[][] dataProviderMethod() {
+        return new Object[][] { { "page", "pagesize" }, { "1", "10" } };
+    }
+
+    @BeforeMethod
+    protected void createSoftAssert() {
+        softAssert = new SoftAssert();
     }
 }

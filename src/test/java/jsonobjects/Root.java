@@ -1,22 +1,30 @@
 package jsonobjects;
 
+import jsonobjects.answers.Item;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.List;
 
+@Getter
+@Setter
+@ToString()
 public class Root {
-    public List<Item> items;
-    public boolean has_more;
-    public int backoff;
-    public int quota_max;
-    public int quota_remaining;
+    private List<Item> items;
+    private boolean has_more;
+    private int backoff;
+    private int quota_max;
+    private int quota_remaining;
 
-    @Override
-    public String toString() {
-        return "Root{" +
-                "items=" + items +
-                ", has_more=" + has_more +
-                ", backoff=" + backoff +
-                ", quota_max=" + quota_max +
-                ", quota_remaining=" + quota_remaining +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Root{" +
+//                "items=" + items +
+//                ", has_more=" + has_more +
+//                ", backoff=" + backoff +
+//                ", quota_max=" + quota_max +
+//                ", quota_remaining=" + quota_remaining +
+//                '}';
+//    }
 }
