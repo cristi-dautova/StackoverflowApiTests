@@ -11,6 +11,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.asserts.SoftAssert;
 
+import java.util.ArrayList;
+
 import static io.restassured.RestAssured.given;
 import static utils.UrlConstants.*;
 
@@ -18,9 +20,7 @@ public class BaseTest {
 
     public static RequestSpecification requestSpecification;
     protected SoftAssert softAssert;
-
-    public BaseTest() {
-    }
+    protected String fileName = "D:/questionIdsData.txt";
 
     @BeforeClass
     public void setUp() {
@@ -36,20 +36,32 @@ public class BaseTest {
         return given(requestSpecification).when().get(url);
     }
 
-    public Root deserializeResponse(Response response) {
+    public Root getAnswers(Response response) {
         return response
                 .then().log().body()
                 .extract()
                 .as(Root.class);
     }
 
-    @DataProvider(name = "parameters for answersEndPointTest")
-    public Object[][] dataProviderMethod() {
-        return new Object[][] { { "page", "pagesize" }, { "1", "10" } };
+    public Root getAnswersByQuestionsId(String url, String ids) {
+        return given(requestSpecification).pathParam("ids", ids).when().get(url)
+                .then().log().body()
+                .extract()
+                .as(Root.class);
     }
 
     @BeforeMethod
     protected void createSoftAssert() {
         softAssert = new SoftAssert();
+    }
+
+    @DataProvider(name = "Parameters for getAnswersTest URL")
+    public Object[][] dataProviderForGetAnswersTest() {
+        return new Object[][] { {"page", "pagesize", "1", "10"} };
+    }
+
+    @DataProvider(name = "Path parameters for getQuestionIdsAnswersTest URL")
+    public Object[][] dataProviderForQuestionIdsAnswersTest() {
+        return new Object[][] { {"126"} };
     }
 }

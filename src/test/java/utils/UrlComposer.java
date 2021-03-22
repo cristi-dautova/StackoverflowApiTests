@@ -10,11 +10,13 @@ import java.util.stream.IntStream;
 
 public class UrlComposer {
 
-    public static String composeURL (ArrayList<String> parameterKeys, ArrayList<String> parameterValues, String ...endPoints) {
+    public static String composeURL (String[] parameterKeys, String[] parameterValues, String ...endPoints) {
+        List<String> paramKeys = Arrays.asList(parameterKeys);
+        List<String> paramValues = Arrays.asList(parameterValues);
 
-        Map<String, String> queryParameters = IntStream.range(0, parameterKeys.size())
+        Map<String, String> queryParameters = IntStream.range(0, paramKeys.size())
                 .boxed()
-                .collect(Collectors.toMap(i -> parameterKeys.get(i), i -> parameterValues.get(i)));
+                .collect(Collectors.toMap(i -> paramKeys.get(i), i -> paramValues.get(i)));
 
         queryParameters.put("site", "stackoverflow");
         queryParameters.put("order", "desc");
@@ -26,14 +28,6 @@ public class UrlComposer {
             stringBuilder.append(endPoint);
         }
         return stringBuilder.toString() + buildQueryParameters(queryParameters);
-    }
-
-    public static ArrayList<String> setParametersToUrl(String... parametersToUrl) {
-        ArrayList<String> parameterKeys = new ArrayList<>();
-        for(String parameter : parametersToUrl) {
-            parameterKeys.add(parameter);
-        }
-        return parameterKeys;
     }
 
     public static String composeURL (String ...endPoints) {
@@ -50,7 +44,7 @@ public class UrlComposer {
     }
 
     private static URIBuilder buildQueryParameters(Map<String, String> queryParameters) {
-        List<NameValuePair> queryTokens = new ArrayList<NameValuePair>();
+        List<NameValuePair> queryTokens = new ArrayList<>();
         for (Map.Entry<String, String> entry : queryParameters.entrySet()) {
             queryTokens.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }

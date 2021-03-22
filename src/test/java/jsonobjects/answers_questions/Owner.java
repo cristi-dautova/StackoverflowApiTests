@@ -1,4 +1,4 @@
-package jsonobjects.answers;
+package jsonobjects.answers_questions;
 
 import lombok.Getter;
 import lombok.Setter;
