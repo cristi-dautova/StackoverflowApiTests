@@ -1,25 +1,27 @@
 package tests;
 
 import io.restassured.response.Response;
-import jsonobjects.answers_questions.Item;
 import jsonobjects.Root;
+import jsonobjects.answers_questions.Item;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.AfterMethod;
-import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import static utils.UrlComposer.*;
-import static utils.UrlConstants.*;
+import static utils.UrlComposer.composeURL;
+import static utils.UrlConstants.ANSWERS_END_POINT;
 
 public class GetAnswersTest extends BaseTest {
 
     ArrayList<Integer> questionsId;
 
-    @Test(dataProvider = "Parameters for getAnswersTest URL")
+    @Test(dataProvider = "Parameters for getAnswers")
     public void getAnswers(String page, String pageSize, String pageValue, String pagesizeValue) {
         String[] parameterKeys = {page, pageSize};
         String[] parameterValues = {pageValue, pagesizeValue};
@@ -37,7 +39,6 @@ public class GetAnswersTest extends BaseTest {
 
     @AfterMethod
     public void writeData() throws IOException {
-
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(fileName);

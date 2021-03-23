@@ -16,17 +16,4 @@ public class Owner {
     private String display_name;
     private String link;
     private int accept_rate;
-
-//    @Override
-//    public String toString() {
-//        return "Owner{" +
-//                "reputation=" + reputation +
-//                ", user_id=" + user_id +
-//                ", user_type='" + user_type + '\'' +
-//                ", accept_rate=" + accept_rate +
-//                ", profile_image='" + profile_image + '\'' +
-//                ", display_name='" + display_name + '\'' +
-//                ", link='" + link +
-//                '}';
-//    }
 }

@@ -6,21 +6,24 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import jsonobjects.Root;
+import org.apache.commons.lang3.StringUtils;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.asserts.SoftAssert;
 
-import java.util.ArrayList;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import static io.restassured.RestAssured.given;
-import static utils.UrlConstants.*;
+import static utils.UrlConstants.BASE_URL;
 
 public class BaseTest {
 
     public static RequestSpecification requestSpecification;
     protected SoftAssert softAssert;
-    protected String fileName = "D:/questionIdsData.txt";
+    protected String fileName = "D:/questionIdsData.csv";
 
     @BeforeClass
     public void setUp() {
@@ -44,7 +47,14 @@ public class BaseTest {
     }
 
     public Root getAnswersByQuestionsId(String url, String ids) {
-        return given(requestSpecification).pathParam("ids", ids).when().get(url)
+        return given(requestSpecification).pathParams("ids", ids).when().get(url)
+                .then().log().body()
+                .extract()
+                .as(Root.class);
+    }
+
+    public Root getAnswersByQuestionId(String url, String id) {
+        return given(requestSpecification).pathParam("ids", id).when().get(url)
                 .then().log().body()
                 .extract()
                 .as(Root.class);
@@ -55,13 +65,29 @@ public class BaseTest {
         softAssert = new SoftAssert();
     }
 
-    @DataProvider(name = "Parameters for getAnswersTest URL")
-    public Object[][] dataProviderForGetAnswersTest() {
-        return new Object[][] { {"page", "pagesize", "1", "10"} };
+    @DataProvider(name = "Parameters for getAnswers")
+    public Object[][] dataProviderForGetAnswers() {
+        return new Object[][]{{"page", "pagesize", "1", "10"}};
     }
 
-    @DataProvider(name = "Path parameters for getQuestionIdsAnswersTest URL")
-    public Object[][] dataProviderForQuestionIdsAnswersTest() {
-        return new Object[][] { {"126"} };
+    @DataProvider(name = "Parameters for getQuestionIdAnswers")
+    public Object[][] dataProviderForQuestionIdAnswersTest() throws FileNotFoundException {
+        String[] singleIds = readDataFromFile(fileName).split(";");
+        return new Object[][]{{singleIds[0]}};
+    }
+
+    @DataProvider(name = "Parameters for getQuestionIdsAnswers")
+    public Object[][] dataProviderForQuestionIdsAnswersTest() throws FileNotFoundException {
+        return new Object[][]{{readDataFromFile(fileName)}};
+    }
+
+    public String readDataFromFile(String fileName) throws FileNotFoundException {
+        FileInputStream fileInputStream = new FileInputStream(fileName);
+        Scanner scanner = new Scanner(fileInputStream);
+        String line = scanner.nextLine();
+        while (scanner.hasNextLine()) {
+            scanner.nextLine();
+        }
+        return StringUtils.chop(line);
     }
 }
