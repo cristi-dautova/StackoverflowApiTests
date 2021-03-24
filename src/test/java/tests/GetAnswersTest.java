@@ -1,62 +1,21 @@
 package tests;
 
-import io.restassured.response.Response;
 import jsonobjects.Root;
 import jsonobjects.answers_questions.Item;
-import org.apache.http.HttpStatus;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-
-import static utils.UrlComposer.composeURL;
-import static utils.UrlConstants.ANSWERS_END_POINT;
+import static utils.UrlConstants.ANSWERS_END_POINT_WITH_BASE_PARAMETERS;
 
 public class GetAnswersTest extends BaseTest {
 
-    ArrayList<Integer> questionsId;
-
-    @Test(dataProvider = "Parameters for getAnswers")
-    public void getAnswers(String page, String pageSize, String pageValue, String pagesizeValue) {
-        String[] parameterKeys = {page, pageSize};
-        String[] parameterValues = {pageValue, pagesizeValue};
-        String url = composeURL(parameterKeys, parameterValues, ANSWERS_END_POINT);
-
-        Response response = getResponse(url);
-        Root rootResponse = getAnswers(response);
-
-        softAssert.assertEquals(response.getStatusCode(), HttpStatus.SC_OK);
-        softAssert.assertTrue(rootResponse.getItems().size() <= Integer.parseInt(pagesizeValue), "Item array size is incorrect: " + rootResponse.getBackoff());
+    @Test()
+    public void getAnswers() {
+        String url = String.format(ANSWERS_END_POINT_WITH_BASE_PARAMETERS, "1", "10");
+        Root rootResponse = deserializeResponseWithoutParams(url);
+        softAssert.assertTrue(rootResponse.getItems().size() <= 10, "Item array size is incorrect: " + rootResponse.getBackoff());
         verifyUserLink(rootResponse, softAssert);
-        questionsId = getQuestionIds(rootResponse);
         softAssert.assertAll();
-    }
-
-    @AfterMethod
-    public void writeData() throws IOException {
-        FileWriter fileWriter = null;
-        try {
-            fileWriter = new FileWriter(fileName);
-        } catch (FileNotFoundException e) {
-            new File(fileName);
-        }
-        for(int id : questionsId){
-            fileWriter.write(id + ";");
-        }
-        fileWriter.close();
-    }
-
-    public ArrayList<Integer> getQuestionIds(Root rootResponse) {
-        questionsId = new ArrayList<>();
-        for (Item item : rootResponse.getItems()) {
-            questionsId.add(item.getQuestion_id());
-        }
-        return questionsId;
     }
 
     private void verifyUserLink(Root rootResponse, SoftAssert softAssert) {
